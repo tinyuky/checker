@@ -16,7 +16,8 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
-
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{{ asset('css/client.07979e74.css') }}" rel="stylesheet">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
@@ -47,5 +48,6 @@
             @yield('content')
         </main>
     </div>
+    <script type="text/javascript" src="{{ asset('js/client.e34add27.js') }}"></script>
 </body>
 </html>

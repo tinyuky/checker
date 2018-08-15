@@ -3,29 +3,32 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="exampleFormControlSelect1">Example select</label>
-                    <select class="form-control" id="mysql" v-model="selected">
-                    <option value="1">Crawler01</option>
-                    <option value="2">Crawler02</option>
-                    <option value="3">Crawler03</option>
-                    <option value="4">Crawler04</option>
+                    <select class="form-control" v-model="selected">
+                        <option disabled value="">Please choose a Crawler</option>
+                        <option v-for="crawler in crawlers" :key="crawler" :value="crawler">Crawler {{crawler}}</option>
                     </select>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="exampleFormControlSelect1">Example select</label>
-                    <select class="form-control" id="table">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
+                    <select class="form-control" v-model="selectedOption">
+                        <option disabled value="">Please choose a Table</option>
+                        <option v-for="table in tables" :key="table" :value="table">{{table}}</option>
                     </select>
                 </div>
             </div>
             <div class="col-md-4">
-                <button type="" class="btn btn-primary mb-2">Connect</button>
+                <select class="form-control" v-model="selectedColumn">
+                    <option disabled value="">Please choose a Column</option>
+                    <option v-for="column in columns" :key="column" :value="column">{{column}}</option>
+                </select>
+                <br>
+                <transition name="fade">
+                    <button type="" class="btn btn-primary mb-2 checksubmit" @click="connect()" v-if="selectedColumn !=''">Check</button>
+                </transition>
+                
+                <!-- <label for="" v-if="datacount === 0">No connection</label>
+                <label for="" v-else>The table have {{datacount}}</label> -->
             </div>
         </div>
         
@@ -85,7 +88,53 @@
                 </div>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                 <div class="card-body">
-                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Error</td>
+                            <td><button type="button" class="btn btn-primary">Primary</button></td>
+                            <td><button type="button" class="btn btn-primary">Primary</button></td>
+                            <td><button type="button" class="btn btn-primary">Primary</button></td>
+                            </tr>
+                            <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                            </tr>
+                            <tr>
+                            <th scope="row">3</th>
+                            <td colspan="2">Larry the Bird</td>
+                            <td>@twitter</td>
+                            </tr>
+                            <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                            </tr>
+                            <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                            </tr>
+                            <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                            </tr>
+                            <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 </div>
             </div>
@@ -99,7 +148,7 @@
                 </div>
                 <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                 <div class="card-body">
-                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                    
                 </div>
                 </div>
             </div>
@@ -108,19 +157,70 @@
 </template>
 
 <script>
+import Table from './Table.vue';
 export default {
-  mounted() {
-    console.log("Component mounted.");
-  },
-  data: function() {
-    return {
-      selected: ""
-    };
-  },
-  watch: {
-    selected: function(newVal) {
-      console.log(newVal);
+    components: {
+    'abc': Table,
+    },
+    mounted() {
+        console.log("Component mounted.");
+        axios.get(`/connectlist`)
+                .then(res => {
+                    this.crawlers = res.data;
+                }).catch(e => {
+                    console.log(e);
+                });
+
+    },
+    data: function() {
+        return {
+            selected: "",
+            tables: [],
+            records:'No Connect',
+            selectedOption: '',
+            datacount:0,
+            selectedColumn:'',
+            columns:[],
+            crawlers:[],
+        };
+    },
+    watch:{
+            selected: function(){
+                axios.get(`/gettablelist/${this.selected}`)
+                .then(res => {
+                    this.tables = res.data; 
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            selectedOption: function(){
+                axios.get(`/getcolumnlist/${this.selected}/${this.selectedOption}`)
+                .then(res => {
+                    this.columns = res.data;
+                }).catch(e => {
+                    console.log(e);
+                });
+            }
+    },
+    methods:{
+        connect: function(){
+            axios.get(`/connectdata/${this.selected}/${this.selectedOption}`)
+                .then(res => {
+                    this.datacount = res.data;
+                }).catch(e => {
+                    console.log(e);
+                });
+            
+        }
     }
-  }
 };
 </script>
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+</style>
+

@@ -6,8 +6,12 @@
  */
 
 require('./bootstrap');
+import Datatable from 'vue2-datatable-component'
+
 
 window.Vue = require('vue');
+Vue.use(Datatable);
+Vue.use(require('vue-moment'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

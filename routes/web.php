@@ -18,3 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/gettablelist/{mysql}', 'HomeController@gettablelist')->name('gettablelist');
+Route::get('/getcolumnlist/{mysql}/{table}', 'HomeController@getcolumnlist')->name('getcolumnlist');
+Route::get('/connectdata/{mysql}/{table}', 'HomeController@connectdata')->name('connectdata');
+Route::get('/connectlist', 'HomeController@connectlist')->name('connectlist');
